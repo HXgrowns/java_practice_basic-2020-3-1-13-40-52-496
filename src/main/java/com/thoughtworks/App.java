@@ -46,22 +46,17 @@ public class App {
 
 
     public static List<Transaction> get2011Transactions(List<Transaction> transactions) {
-        Stream<Transaction> transactionStream = transactions.stream();
-        Stream<Transaction> filterStream = transactionStream.filter(transaction -> transaction.getYear() == 2011);
-        Stream<Transaction> valueSorted = filterStream.sorted(Comparator.comparing(Transaction::getValue));
-        return valueSorted.collect(Collectors.toList());
+        return transactions.stream()
+                .filter(transaction -> transaction.getYear() == 2011)
+                .sorted(Comparator.comparing(Transaction::getValue))
+                .collect(Collectors.toList());
     }
 
     public static List<String> getTradersCity(List<Transaction> transactions) {
-        Set<Trader> traders = new LinkedHashSet<>();
-        for (Transaction transaction : transactions) {
-            traders.add(transaction.getTrader());
-        }
-        Set<String> cities = new LinkedHashSet<>();
-        for (Trader trader : traders) {
-            cities.add(trader.getCity());
-        }
-        return new ArrayList<>(cities);
+        return transactions.stream()
+                .map(transaction -> transaction.getTrader().getCity())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public static List<Trader> getCambridgeTraders(List<Transaction> transactions) {
@@ -69,10 +64,11 @@ public class App {
         for (Transaction transaction : transactions) {
             traders.add(transaction.getTrader());
         }
-        Stream<Trader> traderStream = traders.stream();
-        Stream<Trader> formCambridgeTraders = traderStream.filter((trader -> trader.getCity().equals("Cambridge")));
-        Stream<Trader> formCambridgeSorted = formCambridgeTraders.sorted(Comparator.comparing(Trader::getName));
-        return formCambridgeSorted.collect(Collectors.toList());
+
+        return traders.stream()
+                .filter((trader -> trader.getCity().equals("Cambridge")))
+                .sorted(Comparator.comparing(Trader::getName))
+                .collect(Collectors.toList());
     }
 
     public static List<String> getTradersName(List<Transaction> transactions) {
@@ -80,38 +76,40 @@ public class App {
         for (Transaction transaction : transactions) {
             tradersName.add(transaction.getTrader().getName());
         }
-        Stream<String> traderStream = tradersName.stream();
-        Stream<String> nameSorted = traderStream.sorted();
-        return nameSorted.collect(Collectors.toList());
+        return tradersName.stream()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public static boolean hasMilanTrader(List<Transaction> transactions) {
-        Stream<Transaction> stream = transactions.stream();
-        Stream<Transaction> formMilan = stream.filter(transaction -> transaction.getTrader().getCity().equals("Milan"));
-        return formMilan.count() != 0;
+        return transactions.stream().anyMatch(transaction -> transaction.getTrader()
+                .getCity()
+                .equals("Milan"));
     }
 
     public static List<Integer> getCambridgeTransactionsValue(List<Transaction> transactions) {
-        if (transactions == null || transactions.isEmpty()) {
-            return null;
-        }
-        Stream<Transaction> stream = transactions.stream();
-        Stream<Transaction> formMambridge = stream.filter(transaction -> transaction.getTrader().getCity().equals("Cambridge"));
-        Stream<Integer> valuesStream = formMambridge.map(Transaction::getValue);
-        return valuesStream.collect(Collectors.toList());
+        return transactions.stream()
+                .filter(transaction -> transaction.getTrader().getCity().equals("Cambridge"))
+                .map(Transaction::getValue)
+                .collect(Collectors.toList());
     }
 
     public static int getMaxTransactionValue(List<Transaction> transactions) {
-        if (transactions == null || transactions.isEmpty()) {
-            return -1;
-        }
-        return transactions.stream().max(Comparator.comparingInt(Transaction::getValue)).map(Transaction::getValue).orElse(-1);
+        return transactions.stream()
+                .max(Comparator.comparingInt(Transaction::getValue))
+                .map(Transaction::getValue).orElse(-1);
     }
 
     public static Transaction getMinTransaction(List<Transaction> transactions) {
-        if (transactions == null || transactions.isEmpty()) {
-            return null;
-        }
-        return transactions.stream().min(Comparator.comparingDouble(Transaction::getValue)).orElse(null);
+        return transactions.stream()
+                .min(Comparator.comparingDouble(Transaction::getValue)).orElse(null);
+    }
+
+    public static void test() {
+        int x = 3;
+        Optional<Integer> optional = Optional.of(x);
+
+        System.out.println(optional.orElse(4));
+        System.out.println(optional.orElseGet(() -> 5));
     }
 }
