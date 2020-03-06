@@ -60,12 +60,9 @@ public class App {
     }
 
     public static List<Trader> getCambridgeTraders(List<Transaction> transactions) {
-        Set<Trader> traders = new LinkedHashSet<>();
-        for (Transaction transaction : transactions) {
-            traders.add(transaction.getTrader());
-        }
-
-        return traders.stream()
+        return transactions.stream()
+                .map(Transaction::getTrader)
+                .distinct()
                 .filter((trader -> trader.getCity().equals("Cambridge")))
                 .sorted(Comparator.comparing(Trader::getName))
                 .collect(Collectors.toList());
